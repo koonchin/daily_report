@@ -456,6 +456,28 @@ kpi_grid_html = f"""
 """
 st.markdown(kpi_grid_html, unsafe_allow_html=True)
 
+# ── Copy Summary Button ──────────────────────────────────────────────────────
+date_range_label = ""
+if "date" in df.columns and df["date"].notna().any():
+    d_min = df["date"].min().strftime("%d %b %Y")
+    d_max = df["date"].max().strftime("%d %b %Y")
+    date_range_label = f"{d_min} - {d_max}"
+
+rev_target_pct = (total_revenue / sales_target * 100) if sales_target > 0 else 0
+ad_budget_pct = (total_ad_spend / ad_budget * 100) if ad_budget > 0 else 0
+
+mom_rev_str = f"{'+' if mom_rev_pct > 0 else ''}{mom_rev_pct:.1f}%" if prev_revenue > 0 else "N/A"
+mom_ad_str = f"{'+' if mom_ad_pct > 0 else ''}{mom_ad_pct:.1f}%" if prev_ad_spend > 0 else "N/A"
+
+summary_text = (
+    f"📊 Performance Summary ({date_range_label})\n"
+    f"Revenue: {fmt_thb(total_revenue)} ({rev_target_pct:.1f}% of target) | MOM: {mom_rev_str}\n"
+    f"Ad Spend: {fmt_thb(total_ad_spend)} ({ad_budget_pct:.1f}% of budget) | ROAS: {overall_roas:.2f}x | MOM: {mom_ad_str}\n"
+    f"Contribution Margin: {fmt_thb(total_cm)} (CM Rate: {cm_pct:.1f}%)"
+)
+
+st.code(summary_text, language=None)
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  SECTION 2: MONTHLY TARGETS PACING (Visual Bars Only)
 # ══════════════════════════════════════════════════════════════════════════════
